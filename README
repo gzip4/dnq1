@@ -1,3 +1,7 @@
 DNQ microkernel design research project
 =======================================
 
+HOW TO BUILD:
+$ sh autogen.sh
+$ ./configure
+$ make

@@ -1,26 +1,22 @@
+AC_INIT([dnq], [0.0.1], [gzip4ever@gmail.com])
 AC_PREREQ([2.65])
-AC_INIT([ftrop], [0.0.1], [])
-AM_INIT_AUTOMAKE([ftrop], [0.0.1])
+AM_INIT_AUTOMAKE([foreign 1.10 dist-bzip2 no-define nostdinc])
 AC_CONFIG_SRCDIR([mkern/main.cc])
 AC_CONFIG_HEADERS([config.h])
 
-if test "x$CFLAGS" == x; then
-  CFLAGS=""
-fi
-if test "x$CXXFLAGS" == x; then
-  CXXFLAGS=""
-fi
+: ${CFLAGS=""}
+: ${CXXFLAGS=""}
 
 # Checks for programs.
-AC_PROG_CXX
-AC_PROG_CC
+AC_PROG_CXX([clang++ g++ c++])
+AC_PROG_CC([clang gcc cc])
 AM_PROG_AS
 AC_PROG_RANLIB
 
-AC_MSG_CHECKING([version of gcc])
-CC_VERSION=`echo __GNUC__ | $CC -E - | grep -v '\#'`
-CC_SUBVERSION=`echo __GNUC_MINOR__ | $CC -E - | grep -v '\#'`
-AC_MSG_RESULT([$CC_VERSION.$CC_SUBVERSION])
+#AC_MSG_CHECKING([version of gcc])
+#CC_VERSION=`echo __GNUC__ | $CC -E - | grep -v '\#'`
+#CC_SUBVERSION=`echo __GNUC_MINOR__ | $CC -E - | grep -v '\#'`
+#AC_MSG_RESULT([$CC_VERSION.$CC_SUBVERSION])
 
 
 # Features
@@ -33,17 +29,11 @@ AC_ARG_ENABLE([debug],
 
 # Checks for libraries.
 
-dnl Find location of libgcc.a
-AC_MSG_CHECKING([location of libgcc.a])
-LIBGCC=`$CC $LIBGCCFLAGS -print-libgcc-file-name`
-LIBGCCDIR=`echo $LIBGCC | sed 's,/[[^/]]*$,,'`
-AC_MSG_RESULT([$LIBGCCDIR])
-
 # Checks for header files.
 
 dnl Find location of stdarg.h include file
 AC_MSG_CHECKING([location of stdarg.h])
-testdir=`echo $LIBGCC | sed 's,/[[^/]]*$,/include,'`
+testdir=`$CC -print-file-name=include`
 if test -f "$testdir/stdarg.h"; then
   STDARGDIR=$testdir
 else
@@ -60,7 +50,8 @@ fi
 
 # Checks for library functions.
 
-CPPFLAGS="-I\$(top_srcdir)/include -I$STDARGDIR $CPPFLAGS"
+CPPFLAGS="-I\$(top_srcdir)/include -I\$(top_builddir) -I$STDARGDIR $CPPFLAGS"
+
 CFLAGS="-O2 -fno-builtin -nostdinc -Wall -W -Wconversion -Wstrict-aliasing=2 $CFLAGS"
 CFLAGS="$CFLAGS -m32 -march=pentium -fomit-frame-pointer -mno-red-zone"
 CFLAGS="$CFLAGS -mno-mmx -mno-sse -mno-sse2 -mno-sse3 -mno-ssse3 -mno-sse4"
@@ -69,8 +60,11 @@ if test "x$enable_temps" == "xyes"; then
 else
   CFLAGS="$CFLAGS -pipe"
 fi
-CCASFLAGS="-m32 -march=pentium -D__ASM__ $CCASFLAGS"
+
+CCASFLAGS="-m32 -march=pentium -D__ASM__ -fno-builtin -nostdinc $CCASFLAGS"
+
 CXXFLAGS="$CFLAGS -fno-exceptions -fno-rtti $CXXFLAGS"
+
 LDFLAGS="-melf_i386 -nostdlib -L\$(top_builddir)/libs $LDFLAGS"
 
 AC_CONFIG_FILES([Makefile
