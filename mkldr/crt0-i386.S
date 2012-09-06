@@ -17,11 +17,12 @@
 
 #include <config.h>
 
+	.code32
 	.section .mb_header, "ax"
-__lmgr_start:
+__mkldr_start:
 	jmp	_start
 
-	.ascii	"ftrop-kernel"
+	.ascii	"dnq-kernel"
 	.align	16, 0x90
 __mb_header:
 	.long	0x1BADB002;
@@ -54,6 +55,6 @@ _start:
 
 	.bss
 	.align	16
-	.space	2048
+	.space	4096
 _mini_stack:
 
