@@ -42,6 +42,7 @@ static inline void outb(const ioport_t port, const byte_t val)
 static void io_init( void )
 {
     static int io_initialized = 0; /* = FALSE */
+    volatile int i;
 
     if (io_initialized)
         return;
@@ -58,7 +59,7 @@ static void io_init( void )
 #define DLHI	(COMPORT+1)
 
         outb(LCR, 0x80);		/* select bank 1	*/
-        for (volatile int i = 10000000; i--; );
+        for (i = 10000000; i--; );
         outb(DLLO, (((115200/CONFIG_COMSPEED) >> 0) & 0x00FF));
         outb(DLHI, (((115200/CONFIG_COMSPEED) >> 8) & 0x00FF));
         outb(LCR, 0x03);		/* set 8,N,1		*/
