@@ -1,0 +1,15 @@
+Makefile
+Makefile.in
+config.*
+.deps
+stamp-h1
+install-sh
+depcomp
+missing
+configure
+aclocal.m4
+libs/libtest.a
+mkern/mkern
+mkldr/mkldr
+rtask/rtask
+*.o
