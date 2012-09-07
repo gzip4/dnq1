@@ -13,12 +13,6 @@ AC_PROG_CC([clang gcc cc])
 AM_PROG_AS
 AC_PROG_RANLIB
 
-#AC_MSG_CHECKING([version of gcc])
-#CC_VERSION=`echo __GNUC__ | $CC -E - | grep -v '\#'`
-#CC_SUBVERSION=`echo __GNUC_MINOR__ | $CC -E - | grep -v '\#'`
-#AC_MSG_RESULT([$CC_VERSION.$CC_SUBVERSION])
-
-
 # Features
 AC_ARG_ENABLE([temps],
   [AS_HELP_STRING([--enable-temps], [enable gcc -save-temps (default: no)])])
