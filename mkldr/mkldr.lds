@@ -6,35 +6,32 @@ ENTRY(_start)
 
 SECTIONS
 {
-        .text :
-        {
-            *(.mb_header)
-            *(.text .text.* .gnu.linkonce.t.*)
-        }
+    .text : {
+        *(.mb_header)
+        *(.text .text.* .gnu.linkonce.t.*)
+    }
 
-        PROVIDE(_etext = .);
+    PROVIDE(_etext = .);
 
-        .rodata  : { *(.rodata .rodata.* .gnu.linkonce.r.*) }
-        .rodata1 : { *(.rodata1) }
+    .rodata  : { *(.rodata .rodata.* .gnu.linkonce.r.*) }
+    .rodata1 : { *(.rodata1) }
 
-        .data  : { *(.data .data.* .gnu.linkonce.d.*) }
-        .data1 : { *(.data1) }
+    .data    : { *(.data .data.* .gnu.linkonce.d.*) }
+    .data1   : { *(.data1) }
 
-        PROVIDE(_edata = .);
+    PROVIDE(_edata = .);
 
-        .bss :
-        {
-            *(.bss .bss.* .gnu.linkonce.b.*)
-            *(COMMON)
-        }
+    .bss : {
+        *(.bss .bss.* .gnu.linkonce.b.*)
+        *(COMMON)
+    }
 
-        PROVIDE(_ebss = .);
-        PROVIDE(_end = .);
+    PROVIDE(_ebss = .);
+    PROVIDE(_end = .);
 
-        /DISCARD/ :
-        {
-            *(.eh_frame)
-            *(.note.GNU-stack)
-            *(.comment)
-        }
+    /DISCARD/ : {
+        *(.eh_frame)
+        *(.note.GNU-stack)
+        *(.comment)
+    }
 }
