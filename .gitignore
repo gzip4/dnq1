@@ -12,4 +12,5 @@ libs/libtest.a
 mkern/mkern
 mkldr/mkldr
 rtask/rtask
+autom4te.cache/*
 *.o
