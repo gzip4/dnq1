@@ -1,6 +1,7 @@
 
 extern "C" int printf(const char *, ...);
 
+
 extern "C" void
 loader_main(unsigned magic, unsigned mbi)
 {
