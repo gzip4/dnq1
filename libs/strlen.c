@@ -1,6 +1,4 @@
-/* -*- mode: c++ -*- */
-
-typedef unsigned long size_t;
+#include "types.h"
 
 size_t strlen(const char *s)
 {

@@ -1,6 +1,4 @@
-/* -*- mode: c++ -*- */
-
-typedef unsigned long size_t;
+#include "types.h"
 
 void bzero(void *dst, size_t n)
 {

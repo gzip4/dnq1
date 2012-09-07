@@ -1,10 +1,10 @@
 #include <stdarg.h>
+#include "types.h"
 
 #ifndef NULL
 #define NULL ((void *) 0)
 #endif
 
-typedef unsigned long size_t;
 extern void putc(int c);
 extern int strlen(const char *s);
 

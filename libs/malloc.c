@@ -21,8 +21,7 @@
 #define ENOMEM -100
 #define EINVAL -101
 
-typedef unsigned int size_t;
-typedef int ptrdiff_t;
+#include "types.h"
 
 extern void abort();
 extern int errno;
