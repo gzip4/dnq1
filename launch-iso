@@ -1,0 +1,1 @@
+qemu-system-i386 -m 32 -cpu pentium -cdrom dnq.iso -boot d -nographic
