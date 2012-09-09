@@ -69,3 +69,9 @@ int load_elf_image(const void *p)
 
 	return 1;
 }
+
+long unsigned elf_entry(const void *p)
+{
+	eh32 *elf = (eh32 *) p;
+	return elf->e_entry;
+}
