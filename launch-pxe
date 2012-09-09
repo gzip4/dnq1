@@ -1,0 +1,1 @@
+qemu-system-i386 -m 32 -cpu pentium -boot n -bootp /boot/grub2/i386-pc/core.0 -tftp ./tftp -nographic

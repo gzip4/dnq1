@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# build dir
+BD="."
+
+TFTP="./tftp"
+test -d "$BD" || exit 1
+test -d "$TFTP" || grub2-mknetdir --net-directory="$TFTP"
+
+cp -f "$BD"/mkldr/mkldr "$TFTP"/boot
+cp -f "$BD"/mkern/mkern "$TFTP"/boot
+
+cat <<EOT >"$TFTP"/boot/grub2/grub.cfg
+timeout=0
+default=0
+menuentry "DNQ Test" {
+    multiboot (pxe)/boot/mkldr
+    module (pxe)/boot/mkern
+}
+EOT
+
+exit 0
