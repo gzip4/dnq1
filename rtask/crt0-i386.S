@@ -23,11 +23,11 @@ _start:
 _mini_stack:
 
 
-	.section .ctors, "aw", @progbits
+	.section .ctors, "a", @progbits
 	.align	16
 __ctors_begin:
 
-	.section .dtors, "aw", @progbits
+	.section .dtors, "a", @progbits
 	.align	16
 __dtors_begin:
 
