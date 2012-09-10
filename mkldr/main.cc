@@ -7,12 +7,7 @@
 
 extern "C" int printf(const char *, ...);
 
-
-
 static void panic(const char *, ...);
-
-
-
 
 static inline bool
 mb_flag_p(const multiboot_info_t *mb, multiboot_uint32_t flag)
@@ -20,15 +15,10 @@ mb_flag_p(const multiboot_info_t *mb, multiboot_uint32_t flag)
 	return mb->flags & flag;
 }
 
-
 static void parse_cmdline(const char *s)
 {
 	//strlen(s);
 }
-
-
-
-
 
 extern "C" void
 loader_main(multiboot_uint32_t magic, const multiboot_info_t *mb)
@@ -148,4 +138,3 @@ void panic(const char *fmt, ...)
 	for ( ; ; )
 		__asm__ __volatile__ ("cli; hlt");
 }
-
