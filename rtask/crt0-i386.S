@@ -1,4 +1,3 @@
-
 #include <config.h>
 
 	.text
@@ -16,6 +15,7 @@ _start:
 
 	/* We should never return from the rt_main */
 	int	$3
+1:	jmp	1b
 
 	.bss
 	.align	16
@@ -24,12 +24,10 @@ _mini_stack:
 
 
 	.section .ctors, "aw", @progbits
-	.globl	__ctors_begin
 	.align	16
 __ctors_begin:
 
 	.section .dtors, "aw", @progbits
-	.globl	__dtors_begin
 	.align	16
 __dtors_begin:
 
