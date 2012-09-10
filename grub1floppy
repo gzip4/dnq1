@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# build dir
+BD="."
+
+export MTOOLSRC=mtoolsrc
+echo 'drive z: file="floppy.img"' > mtoolsrc
+echo '(fd0) floppy.img' > bmap
+rm -f floppy.img
+mkdosfs -C floppy.img 1440
+
+cat <<EOT >grub.conf
+timeout 0
+default 0
+title = DNQ Kernel Test
+kernel=/boot/mkldr
+module=/boot/mkern
+module=/boot/rtask
+EOT
+
+mmd z:boot
+mmd z:boot/grub
+mcopy grub.conf z:boot/grub
+mcopy /boot/grub/stage1 z:boot/grub
+mcopy /boot/grub/stage2 z:boot/grub
+mcopy /boot/grub/fat_stage1_5 z:boot/grub
+mcopy "$BD/mkldr/mkldr" z:boot      || exit 1
+mcopy "$BD/mkern/mkern" z:boot      || exit 1
+mcopy "$BD/rtask/rtask" z:boot      || exit 1
+#mdir z:boot/grub
+#mdir z:boot
+
+grub --batch --device-map=bmap <<EOT
+root (fd0)
+setup (fd0)
+quit
+EOT
+
+rm -f mtoolsrc bmap grub.conf
+exit 0

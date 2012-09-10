@@ -1,0 +1,1 @@
+qemu-kvm -m 32 -cpu pentium -smp 1 -boot a -fda floppy.img -nographic
