@@ -12,7 +12,7 @@ typedef signed short		sint16;
 typedef signed int		sint32;
 typedef signed long long	sint64;
 
-typedef uint32			word_t;
+typedef uint32			mword_t;
 
 #else
 #error i386+ arch only
