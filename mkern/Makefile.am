@@ -1,5 +1,5 @@
 noinst_PROGRAMS = mkern mkern.sym mkern.x mkern.s
-mkern_SOURCES = crt0-x86.S main.cc trap.cc trapasm.S vectors.S crtn.S
+mkern_SOURCES = crt0-x86.S main.cc trap.cc trapasm.S vectors.S
 mkern_DEPENDENCIES = $(srcdir)/mkern.lds
 mkern_LINK = $(LD) -o $@ $(LDFLAGS) -n -M -Map=mkern.map --cref -T$(srcdir)/mkern.lds
 mkern_LDADD = -lsubc

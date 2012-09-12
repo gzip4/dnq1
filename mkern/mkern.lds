@@ -13,8 +13,6 @@ SECTIONS
     .rodata  : { *(.rodata .rodata.* .gnu.linkonce.r.*); }
     .rodata1 : { *(.rodata1); }
 
-    .ctors   : { *(.ctors); }
-
     .data :
     {
         PROVIDE(_data = .);
@@ -29,8 +27,6 @@ SECTIONS
         *(COMMON);
         PROVIDE(_ebss = .);
     }
-
-    .ksystab : { *(.ksystab*); }
 
     PROVIDE(_end = .);
 
