@@ -20,6 +20,9 @@ AC_ARG_ENABLE([temps],
 AC_ARG_ENABLE([debug],
   [AS_HELP_STRING([--enable-debug], [enable debugging (default: no)])])
 
+# FIXME: allow to configure this (--with-ncpu=1|2|4|8...)
+AC_DEFINE([NCPU],[4],[Max CPU number supported by kernel])
+AC_DEFINE([NTCB],[1024],[Max TCB number supported by kernel])
 
 # Checks for libraries.
 
