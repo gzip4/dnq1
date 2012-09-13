@@ -24,6 +24,9 @@ AC_ARG_ENABLE([debug],
 AC_DEFINE([NCPU],[4],[Max CPU number supported by kernel])
 AC_DEFINE([NTCB],[1024],[Max TCB number supported by kernel])
 
+# FIXME: see if NCPU == 1 then undefine this, otherwise define
+AC_DEFINE([CONFIG_SMP],[1],[SMP kernel, NCPU>1])
+
 # Checks for libraries.
 
 # Checks for header files.
