@@ -5,3 +5,4 @@ rtask_LDADD = -lsubc
 rtask_LDFLAGS = -n -M -Map=rtask.map --cref
 rtask_LINK = $(LD) -o $@ $(LDFLAGS) $(rtask_LDFLAGS) -T$(srcdir)/rtask.lds
 EXTRA_DIST = rtask.lds
+CLEANFILES = rtask.map
