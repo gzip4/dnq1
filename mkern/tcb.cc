@@ -10,6 +10,7 @@ void init_tcb()
 {
 	tcb_t *tcb;
 	for (tcb = tcb_begin; tcb < tcb_end; ++tcb) {
+		// XXX: init tcb's id (myid)
 		tcb->state = tcb_t::FREE;
 		tcb->next = tcb + 1;
 	}
@@ -30,6 +31,7 @@ tcb_t *tcb_t::alloc()
 
 void tcb_t::free(tcb_t *tcb /* != NULL */)
 {
+	tcb->myid = tid_t::vnext(tcb->myid);
 	tcb->state = FREE;
 	tcb->next = tcb_free;
 	tcb_free = tcb;

@@ -22,6 +22,8 @@ private:
 	       SEND, RECV, RECV2, PAGEF, EXPT,
 	} state;
 
+	tid_t myid;
+
 	// TCB QUEUES
 	tcb_t *next;
 	tcb_t *qrecv;
