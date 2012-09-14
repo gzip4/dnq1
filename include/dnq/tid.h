@@ -14,11 +14,11 @@ struct tid_t
 {
 	mword_t raw;
 
-	static const tid_t nil;
-	static const tid_t any;
-
 	int no()  const { return raw >> VERSION_SHIFT; }
 	int ver() const { return raw &  VERSION_MASK; }
+
+	static const tid_t nil() {tid_t x = { 0 };return x;}
+	static const tid_t any() {tid_t x = {-1U};return x;}
 
 	template <typename T1, typename T2>
 	static tid_t get(T1 no, T2 ver = 0)
@@ -37,8 +37,5 @@ struct tid_t
 
 #undef VERSION_SHIFT
 #undef VERSION_MASK
-
-const tid_t tid_t::nil = { 0U};
-const tid_t tid_t::any = {-1U};
 
 #endif /* DNQ_TID_H */
