@@ -1,20 +1,9 @@
 // The local APIC manages internal (non-I/O) interrupts.
 // See Chapter 8 & Appendix C of Intel processor manual volume 3.
 
-//#include "types.h"
-//#include "defs.h"
-//#include "memlayout.h"
-//#include "traps.h"
-//#include "mmu.h"
-//#include "x86.h"
+#include <dnq/dnq.h>
 
-typedef unsigned char  uchar;
-typedef unsigned short ushort;
-typedef unsigned int   uint;
-typedef unsigned long  ulong;
-
-
-static inline void outb(ushort port, uchar val)
+static inline void outb(uint16 port, uint8 val)
 {
 	__asm__ __volatile__ (
 		"outb %0, %1"
@@ -23,9 +12,9 @@ static inline void outb(ushort port, uchar val)
 	);
 }
 
-static inline uchar inb(ushort port)
+static inline uint8 inb(uint16 port)
 {
-	uchar ret;
+	uint8 ret;
 	__asm__ __volatile__ (
 		"inb %1, %0"
 		: "=a"(ret)
@@ -35,7 +24,7 @@ static inline uchar inb(ushort port)
 }
 
 
-// Local APIC registers, divided by 4 for use as uint[] indices.
+// Local APIC registers, divided by 4 for use as uint32[] indices.
 #define ID      (0x0020/4)   // ID
 #define VER     (0x0030/4)   // Version
 #define TPR     (0x0080/4)   // Task Priority
@@ -66,9 +55,11 @@ static inline uchar inb(ushort port)
 #define TCCR    (0x0390/4)   // Timer Current Count
 #define TDCR    (0x03E0/4)   // Timer Divide Configuration
 
-volatile uint *lapic;  // Initialized in mp.c
 
-static void lapicw(int index, uint value)
+
+volatile uint32 *lapic;  // Initialized in mp.c
+
+static void lapicw(int index, uint32 value)
 {
 	lapic[index] = value;
 	lapic[ID];  // wait for write to finish, by reading
@@ -78,51 +69,51 @@ static void lapicw(int index, uint value)
 #if 0
 void lapicinit(int c)
 {
-	if(!lapic) return;
+	if (!lapic) return;
 
-  // Enable local APIC; set spurious interrupt vector.
-  lapicw(SVR, ENABLE | (T_IRQ0 + IRQ_SPURIOUS));
+	// Enable local APIC; set spurious interrupt vector.
+	lapicw(SVR, ENABLE | (T_IRQ0 + IRQ_SPURIOUS));
 
-  // The timer repeatedly counts down at bus frequency
-  // from lapic[TICR] and then issues an interrupt.  
-  // If xv6 cared more about precise timekeeping,
-  // TICR would be calibrated using an external time source.
-  lapicw(TDCR, X1);
-  lapicw(TIMER, PERIODIC | (T_IRQ0 + IRQ_TIMER));
-  lapicw(TICR, 10000000); 
+	// The timer repeatedly counts down at bus frequency
+	// from lapic[TICR] and then issues an interrupt.  
+	// If xv6 cared more about precise timekeeping,
+	// TICR would be calibrated using an external time source.
+	lapicw(TDCR, X1);
+	lapicw(TIMER, PERIODIC | (T_IRQ0 + IRQ_TIMER));
+	lapicw(TICR, 10000000); 
 
-  // Disable logical interrupt lines.
-  lapicw(LINT0, MASKED);
-  lapicw(LINT1, MASKED);
+	// Disable logical interrupt lines.
+	lapicw(LINT0, MASKED);
+	lapicw(LINT1, MASKED);
 
-  // Disable performance counter overflow interrupts
-  // on machines that provide that interrupt entry.
-  if(((lapic[VER]>>16) & 0xFF) >= 4)
-    lapicw(PCINT, MASKED);
+	// Disable performance counter overflow interrupts
+	// on machines that provide that interrupt entry.
+	if (((lapic[VER]>>16) & 0xFF) >= 4)
+		lapicw(PCINT, MASKED);
 
-  // Map error interrupt to IRQ_ERROR.
-  lapicw(ERROR, T_IRQ0 + IRQ_ERROR);
+	// Map error interrupt to IRQ_ERROR.
+	lapicw(ERROR, T_IRQ0 + IRQ_ERROR);
 
-  // Clear error status register (requires back-to-back writes).
-  lapicw(ESR, 0);
-  lapicw(ESR, 0);
+	// Clear error status register (requires back-to-back writes).
+	lapicw(ESR, 0);
+	lapicw(ESR, 0);
 
-  // Ack any outstanding interrupts.
-  lapicw(EOI, 0);
+	// Ack any outstanding interrupts.
+	lapicw(EOI, 0);
 
-  // Send an Init Level De-Assert to synchronise arbitration ID's.
-  lapicw(ICRHI, 0);
-  lapicw(ICRLO, BCAST | INIT | LEVEL);
-  while(lapic[ICRLO] & DELIVS)
-    ;
+	// Send an Init Level De-Assert to synchronise arbitration ID's.
+	lapicw(ICRHI, 0);
+	lapicw(ICRLO, BCAST | INIT | LEVEL);
+	while(lapic[ICRLO] & DELIVS)
+		;
 
-  // Enable interrupts on the APIC (but not on the processor).
-  lapicw(TPR, 0);
+	// Enable interrupts on the APIC (but not on the processor).
+	lapicw(TPR, 0);
 }
 #endif
 
 
-int cpunum(void)
+int cpunum()
 {
 	if (lapic)
 		return lapic[ID]>>24;
@@ -130,7 +121,7 @@ int cpunum(void)
 }
 
 // Acknowledge interrupt.
-void lapiceoi(void)
+void lapiceoi()
 {
 	if (lapic) lapicw(EOI, 0);
 }
@@ -145,36 +136,36 @@ void microdelay(int)
 
 // Start additional processor running entry code at addr.
 // See Appendix B of MultiProcessor Specification.
-void lapicstartap(uchar apicid, uint addr)
+void lapicstartap(uint8 apicid, uint32 addr)
 {
-  int i;
-  ushort *wrv;
+	int i;
+	uint16 *wrv;
 
-  // "The BSP must initialize CMOS shutdown code to 0AH
-  // and the warm reset vector (DWORD based at 40:67) to point at
-  // the AP startup code prior to the [universal startup algorithm]."
-  outb(IO_RTC, 0xF);  // offset 0xF is shutdown code
-  outb(IO_RTC+1, 0x0A);
-  wrv = (ushort*)(0x40<<4 | 0x67);  // Warm reset vector
-  wrv[0] = 0;
-  wrv[1] = (ushort)(addr >> 4);
+	// "The BSP must initialize CMOS shutdown code to 0AH
+	// and the warm reset vector (DWORD based at 40:67) to point at
+	// the AP startup code prior to the [universal startup algorithm]."
+	outb(IO_RTC, 0xF);  // offset 0xF is shutdown code
+	outb(IO_RTC+1, 0x0A);
+	wrv = (uint16*)(0x40<<4 | 0x67);  // Warm reset vector
+	wrv[0] = 0;
+	wrv[1] = (uint16)(addr >> 4);
 
-  // "Universal startup algorithm."
-  // Send INIT (level-triggered) interrupt to reset other CPU.
-  lapicw(ICRHI, (uint)(apicid<<24));
-  lapicw(ICRLO, INIT | LEVEL | ASSERT);
-  microdelay(200);
-  lapicw(ICRLO, INIT | LEVEL);
-  microdelay(100);    // should be 10ms, but too slow in Bochs!
+	// "Universal startup algorithm."
+	// Send INIT (level-triggered) interrupt to reset other CPU.
+	lapicw(ICRHI, (uint32)(apicid<<24));
+	lapicw(ICRLO, INIT | LEVEL | ASSERT);
+	microdelay(200);
+	lapicw(ICRLO, INIT | LEVEL);
+	microdelay(100);    // should be 10ms, but too slow in Bochs!
 
-  // Send startup IPI (twice!) to enter code.
-  // Regular hardware is supposed to only accept a STARTUP
-  // when it is in the halted state due to an INIT.  So the second
-  // should be ignored, but it is part of the official Intel algorithm.
-  // Bochs complains about the second one.  Too bad for Bochs.
-  for(i = 0; i < 2; i++){
-    lapicw(ICRHI, (uint)(apicid<<24));
-    lapicw(ICRLO, STARTUP | (addr>>12));
-    microdelay(200);
-  }
+	// Send startup IPI (twice!) to enter code.
+	// Regular hardware is supposed to only accept a STARTUP
+	// when it is in the halted state due to an INIT.  So the second
+	// should be ignored, but it is part of the official Intel algorithm.
+	// Bochs complains about the second one.  Too bad for Bochs.
+	for (i = 0; i < 2; i++){
+		lapicw(ICRHI, (uint32)(apicid<<24));
+		lapicw(ICRLO, STARTUP | (addr>>12));
+		microdelay(200);
+	}
 }

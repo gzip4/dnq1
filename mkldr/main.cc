@@ -20,6 +20,77 @@ static void parse_cmdline(const char *s)
 	//strlen(s);
 }
 
+template <class T1, class T2>
+static inline void memcpy(T1 dst, T2 src, unsigned sz)
+{
+	uint8 *d = reinterpret_cast<uint8 *>(dst);
+	uint8 *s = reinterpret_cast<uint8 *>(src);
+	while (sz--) { *d++ = *s++; }
+}
+
+volatile bool cpu_wait = false;
+
+
+static void mpenter()
+{
+	int sp;
+	__asm volatile ("movl %%esp,%0" : "=r" (sp));
+	printf("ready. esp=0x%08x\n", sp);
+
+#if 0
+	uint32 a, d;
+	x86::rdmsr(MSR_IA32_APIC_BASE, &a, &d);
+	printf("IA32_APIC_BASE: %08x-%08x\n", d, a);
+
+	lapic_t<0xfee00000> apic;
+	printf("LAPIC ID : %08x\n", apic.id());
+	printf("LAPIC VER: %08x\n", apic.ver());
+	printf("LAPIC LVT: %08x\n", apic.lvtn());
+
+	printf("LAPIC SIV: %08x\n", apic.siv());
+	apic.init();
+	printf("LAPIC SIV: %08x\n", apic.siv());
+
+	printf("AP\n");
+#endif
+
+	cpu_wait = false;
+	for (;;) __asm volatile ("hlt");
+}
+
+
+extern int ncpu;
+extern int ismp;
+extern int ioapicid;
+extern int *lapic;
+extern void mpinit();
+extern void lapicstartap(uint8 apicid, mword_t addr);
+extern "C" void _start_ap();
+
+
+static void boot_ap(uint8 apicid)
+{
+	static bool initialized = false;
+	static const mword_t addr = 0x7000;
+	static const mword_t stack = 0x8000;
+
+	mword_t *code = (mword_t *) addr;
+	if (!initialized) {
+		memcpy(code, _start_ap, 200);
+		code[-2] = (mword_t) mpenter;
+		initialized = true;
+	}
+	code[-1] = stack + (apicid - 1) * 256;
+
+	cpu_wait = true;
+
+	printf("CPU#%d: ", apicid);
+	lapicstartap(apicid, addr);
+	while (cpu_wait) ;
+}
+
+
+
 extern "C" void
 loader_main(multiboot_uint32_t magic, const multiboot_info_t *mb)
 {
@@ -101,7 +172,18 @@ loader_main(multiboot_uint32_t magic, const multiboot_info_t *mb)
 		panic("No modules found.");
 	}
 
+	// XXX: ifdef CONFIG_SMP
+	mpinit();
+	printf("ncpu: %d, lapic: %p\n", ncpu, lapic);
 
+	//if (ncpu > 1) boot_ap();
+	printf("CPU#0: ready\n");
+	for (uint8 i = 1; i < ncpu; ++i)
+	{
+		boot_ap(i);
+	}
+
+	printf("---\n");
 }
 
 
