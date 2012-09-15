@@ -53,7 +53,7 @@ fi
 
 CPPFLAGS="-I\$(top_srcdir)/include -I\$(top_builddir) -I$STDARGDIR $CPPFLAGS"
 
-CFLAGS="-O2 -fno-builtin -nostdinc -Wall -W -Wconversion -Wstrict-aliasing=2 $CFLAGS"
+CFLAGS="-g -O2 -fno-builtin -nostdinc -Wall -W -Wconversion -Wstrict-aliasing=2 $CFLAGS"
 CFLAGS="$CFLAGS -m32 -march=pentium -fomit-frame-pointer -mno-red-zone"
 CFLAGS="$CFLAGS -mno-mmx -mno-sse -mno-sse2 -mno-sse3 -mno-ssse3 -mno-sse4"
 if test "x$enable_temps" == "xyes"; then
@@ -62,7 +62,7 @@ else
   CFLAGS="$CFLAGS -pipe"
 fi
 
-CCASFLAGS="-m32 -march=pentium -D__ASM__ -fno-builtin -nostdinc $CCASFLAGS"
+CCASFLAGS="-g -m32 -march=pentium -D__ASM__ -fno-builtin -nostdinc $CCASFLAGS"
 
 CXXFLAGS="$CFLAGS -fno-exceptions -fno-rtti $CXXFLAGS"
 

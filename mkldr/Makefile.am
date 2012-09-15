@@ -8,5 +8,5 @@ CLEANFILES =
 
 if CLANG
 entryap.o: entryap.S Makefile
-	$(CC) -c $(CPPFLAGS) $(CCASFLAGS) -no-integrated-as -o $@ $<
+	$(CCAS) -c $(CPPFLAGS) $(CCASFLAGS) -no-integrated-as -o $@ $<
 endif
