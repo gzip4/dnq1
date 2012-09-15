@@ -12,6 +12,7 @@ AC_PROG_CXX([clang++ g++ c++])
 AC_PROG_CC([clang gcc cc])
 AM_PROG_AS
 AC_PROG_RANLIB
+AM_CONDITIONAL([CLANG],[test x$CC = xclang])
 
 # Features
 AC_ARG_ENABLE([temps],

@@ -5,3 +5,8 @@ mkldr_LINK = $(LD) -o $@ $(LDFLAGS) -T$(srcdir)/mkldr.lds
 mkldr_LDADD = -lsubc
 EXTRA_DIST = mkldr.lds elf32.h
 CLEANFILES =
+
+if CLANG
+entryap.o: entryap.S Makefile
+	$(CC) -c $(CPPFLAGS) $(CCASFLAGS) -no-integrated-as -o $@ $<
+endif
