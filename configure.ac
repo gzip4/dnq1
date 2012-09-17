@@ -27,7 +27,9 @@ AC_ARG_WITH([ncpu],
   [with_ncpu=4])
 
 AC_ARG_WITH([ntcb],
-  [AS_HELP_STRING([--with-ntcb=N], [max TCBs supported (default: 1024)])])
+  [AS_HELP_STRING([--with-ntcb=N], [max TCBs supported (default: 1024)])],
+  [],
+  [with_ntcb=1024])
 
 
 AS_IF([test x$with_ncpu = xyes], [with_ncpu=4])
