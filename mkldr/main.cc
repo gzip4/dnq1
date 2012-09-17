@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <multiboot.h>
+#include <config.h>
 
 #include <dnq/dnq.h>
 
@@ -28,6 +29,8 @@ static inline void memcpy(T1 dst, T2 src, unsigned sz)
 	while (sz--) { *d++ = *s++; }
 }
 
+
+#if defined(CONFIG_SMP)
 volatile bool cpu_wait = false;
 
 
@@ -88,7 +91,7 @@ static void boot_ap(uint8 apicid)
 	lapicstartap(apicid, addr);
 	while (cpu_wait) ;
 }
-
+#endif // defined(CONFIG_SMP)
 
 
 extern "C" void
@@ -172,16 +175,20 @@ loader_main(multiboot_uint32_t magic, const multiboot_info_t *mb)
 		panic("No modules found.");
 	}
 
+#if defined(CONFIG_SMP)
 	// XXX: ifdef CONFIG_SMP
 	mpinit();
 	printf("ncpu: %d, lapic: %p\n", ncpu, lapic);
 
-	//if (ncpu > 1) boot_ap();
+	if (ncpu > NCPU)
+		ncpu = NCPU;
+
 	printf("CPU#0: ready\n");
 	for (uint8 i = 1; i < ncpu; ++i)
 	{
 		boot_ap(i);
 	}
+#endif
 
 	printf("---\n");
 }

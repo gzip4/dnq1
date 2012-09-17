@@ -2,9 +2,9 @@
 // Search memory for MP description structures.
 // http://developer.intel.com/design/pentium/datashts/24201606.pdf
 
+#include <config.h>
 
-// XXX: NCPU -> config.h
-#define NCPU	4
+#if defined(CONFIG_SMP)
 
 extern "C" int printf(const char *, ...);
 
@@ -253,3 +253,5 @@ void mpinit()
 		outb(0x23, inb(0x23) | 1);  // Mask external interrupts.
 	}
 }
+
+#endif // defined(CONFIG_SMP)
