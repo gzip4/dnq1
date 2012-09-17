@@ -5,8 +5,8 @@
 #include <dnq/dnq.h>
 
 #include "elf32.h"
+#include "subc.h"
 
-extern "C" int printf(const char *, ...);
 
 static void panic(const char *, ...);
 
@@ -19,14 +19,6 @@ mb_flag_p(const multiboot_info_t *mb, multiboot_uint32_t flag)
 static void parse_cmdline(const char *s)
 {
 	printf("parse kernel cmdline: %s\n", s);
-}
-
-template <class T1, class T2>
-static inline void memcpy(T1 dst, T2 src, unsigned sz)
-{
-	uint8 *d = reinterpret_cast<uint8 *>(dst);
-	uint8 *s = reinterpret_cast<uint8 *>(src);
-	while (sz--) { *d++ = *s++; }
 }
 
 
@@ -79,7 +71,7 @@ static void boot_ap(uint8 apicid)
 
 	mword_t *code = (mword_t *) addr;
 	if (!initialized) {
-		memcpy(code, _start_ap, 200);
+		memcpy((void *)code, (void *)_start_ap, 200u);
 		code[-2] = (mword_t) mpenter;
 		initialized = true;
 	}
@@ -195,8 +187,6 @@ loader_main(multiboot_uint32_t magic, const multiboot_info_t *mb)
 
 
 // panic impl
-extern "C" void putc(int);
-extern "C" int vsnprintf (char *, unsigned int, const char *, va_list);
 
 static inline void print_string(const char *s)
 {

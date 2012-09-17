@@ -3,11 +3,9 @@
 // http://developer.intel.com/design/pentium/datashts/24201606.pdf
 
 #include <config.h>
+#include "subc.h"
 
 #if defined(CONFIG_SMP)
-
-extern "C" int printf(const char *, ...);
-
 
 // See MultiProcessor Specification Version 1.[14]
 

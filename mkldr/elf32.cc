@@ -1,5 +1,6 @@
 #include <dnq/types.h>
 #include "elf32.h"
+#include "subc.h"
 
 struct eh32
 {
@@ -30,16 +31,6 @@ struct ph32 {
   uint32 p_align;
 };
 
-extern "C" int printf(const char *, ...);
-
-template <class T1, class T2>
-static inline void bcpy(T1 dest, T2 src, uint32 size)
-{
-	uint8 *d = (uint8 *) dest;
-	uint8 *s = (uint8 *) src;
-	while (size--)
-		*d++ = *s++;
-}
 
 int check_elf_ident(const void *p)
 {
@@ -63,7 +54,9 @@ int load_elf_image(const void *p)
 		if (ph[i].p_type == 1) {
 			printf(" -> %p-%p\n", ph[i].p_paddr,
 				ph[i].p_paddr + ph[i].p_memsz - 1);
-			bcpy(ph[i].p_paddr, _elf + ph[i].p_offset, ph[i].p_filesz);
+			memcpy( (void *) ph[i].p_paddr,
+				(void *) (_elf + ph[i].p_offset),
+				ph[i].p_filesz);
 		}
 	}
 
