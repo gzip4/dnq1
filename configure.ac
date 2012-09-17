@@ -21,12 +21,31 @@ AC_ARG_ENABLE([temps],
 AC_ARG_ENABLE([debug],
   [AS_HELP_STRING([--enable-debug], [enable debugging (default: no)])])
 
-# FIXME: allow to configure this (--with-ncpu=1|2|4|8...)
-AC_DEFINE([NCPU],[4],[Max CPU number supported by kernel])
-AC_DEFINE([NTCB],[1024],[Max TCB number supported by kernel])
+AC_ARG_WITH([ncpu],
+  [AS_HELP_STRING([--with-ncpu=N], [max CPUs supported (default: 4)])],
+  [],
+  [with_ncpu=4])
 
-# FIXME: see if NCPU == 1 then undefine this, otherwise define
-AC_DEFINE([CONFIG_SMP],[1],[SMP kernel, NCPU>1])
+AC_ARG_WITH([ntcb],
+  [AS_HELP_STRING([--with-ntcb=N], [max TCBs supported (default: 1024)])])
+
+
+AS_IF([test x$with_ncpu = xyes], [with_ncpu=4])
+AS_IF([test x$with_ncpu = xno], [with_ncpu=1])
+AS_IF([test $with_ncpu != 1 -a $with_ncpu != 2 -a $with_ncpu != 4 -a $with_ncpu != 8 -a $with_ncpu != 16 ],
+      [AC_MSG_FAILURE([--with-ncpu requires number (1|2|4|8|16)])])
+
+AS_IF([test x$with_ntcb = xyes -o x$with_ntcb = xno ],
+      [with_ntcb=1024])
+AS_IF([test $with_ntcb -lt 32 ],
+      [AC_MSG_FAILURE([--with-ntcb requires number >= 32])])
+
+AC_DEFINE_UNQUOTED([NCPU],[$with_ncpu],[Max CPU number supported by kernel])
+AC_DEFINE_UNQUOTED([NTCB],[$with_ntcb],[Max TCB number supported by kernel])
+
+AS_IF([test $with_ncpu -gt 1],
+  [AC_DEFINE([CONFIG_SMP],[1],[SMP kernel, NCPU>1])],
+  [])
 
 # Checks for libraries.
 
