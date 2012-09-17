@@ -2,9 +2,8 @@
 #define MKERN_TCB_H
 
 #include <dnq/dnq.h>
+#include <config.h>
 
-// FIXME! move this define to config.h
-#define NTCB	1024
 
 class tcb_t
 {
