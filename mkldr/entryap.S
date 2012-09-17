@@ -35,12 +35,12 @@ _start_ap:
 	ljmpl   $(SEG_KCODE<<3), $0x7040
 
 	.p2align 2
-gdt:
+# gdt:
 	.quad 0
 	.quad 0x00cf9a000000ffff
 	.quad 0x00cf92000000ffff
 
-gdtdesc:
+# gdtdesc:
 	.word   8 * 3 - 1
 	.long   0x7020
 
