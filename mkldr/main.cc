@@ -18,7 +18,7 @@ mb_flag_p(const multiboot_info_t *mb, multiboot_uint32_t flag)
 
 static void parse_cmdline(const char *s)
 {
-	//strlen(s);
+	printf("parse kernel cmdline: %s\n", s);
 }
 
 template <class T1, class T2>
